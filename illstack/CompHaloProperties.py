@@ -29,7 +29,7 @@ class CompHaloProp:
 
         data_qw = np.histogram(rad, bins=self.radbins, weights=quant*weight)
         data_w  = np.histogram(rad, bins=self.radbins, weights=weight)
-        data_count = np.histogram(rad, bins=self.radbins)
+        BinCount = np.histogram(rad, bins=self.radbins)
 
         if (volweight == True):
             BinValue = data_qw[0] / Volume
