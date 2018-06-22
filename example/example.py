@@ -14,7 +14,7 @@ istk.init.initialize('istk-params.txt')
 #print('mean gas particle mass = ',mean_gas_mass)
 
 
-lims = [0.1,10.]
+lims = [4,15.]
 bins = 10
 CHP = CompHaloProp(lims,bins)
 
@@ -28,6 +28,5 @@ weight = np.array(1.+temp*0.0)
 
 
 print temp.shape, np.mean(weight)
-
-print CHP.radbins, CHP.BinCenter
+#print CHP.radbins, CHP.BinCenter
 print CHP.ComputeHaloProfile(pos,temp,weight)
