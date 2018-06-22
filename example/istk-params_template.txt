@@ -1,5 +1,5 @@
 # edit this file and change basepath to your location of illustris data
-#
+# and copy to a new file (not this template)
 basepath = '/project/projectdirs/m3058/malvarez/illustris/ill_data'
 serial   = True
 
