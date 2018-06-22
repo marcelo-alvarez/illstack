@@ -10,16 +10,17 @@ def getparameters(filename):
     dict=pdict()
     dict.read_from_file(filename)
 
-    if 'basepath' in dict: params.basepath = dict['basepath']
+    if 'basepath' in dict: 
+        params.basepath = dict['basepath']
+        print 'basepath in dict, basepath = ',dict['basepath']
     if 'serial'   in dict: params.serial   = dict['serial']
 
     return params
 
 def initialize(parameterfile):
 
-    import params
     params = getparameters(parameterfile)
-    print params
+#    print 'params basepath = ', params.basebath
 
     if params.serial: mpi4py.rc.initialize = False
     from mpi4py import MPI
