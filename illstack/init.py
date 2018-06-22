@@ -20,7 +20,6 @@ def getparameters(filename):
 def initialize(parameterfile):
 
     params = getparameters(parameterfile)
-#    print 'params basepath = ', params.basebath
 
     if params.serial: mpi4py.rc.initialize = False
     from mpi4py import MPI
