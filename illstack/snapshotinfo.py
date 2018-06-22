@@ -9,9 +9,7 @@ def meanparticleproperty(snapshot_number,partType,field):
     mean_property = np.mean(gas_mass,dtype='double')*1e10/0.704
 
     return mean_property
-
-
-
+    
 
 
 
