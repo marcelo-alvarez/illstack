@@ -6,4 +6,5 @@ if [ "$#" -gt 0 ]; then
 else
     git commit -a
 fi
+git pull
 git push -u origin

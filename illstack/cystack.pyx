@@ -3,11 +3,11 @@ import numpy as np
 cimport numpy as np
 
 search_radius = 2
-ntile=2
-def cullonhalos(
+ntile=8
+def stackonhalostile(
     np.ndarray xp,np.ndarray yp,np.ndarray zp,
     np.ndarray xh,np.ndarray yh,np.ndarray zh,
-    np.ndarray rh,np.ndarray mh):
+    np.ndarray rh,np.ndarray mh, it, jt, kt,ntile):
 
     '''
     Parameters
@@ -43,3 +43,15 @@ def cullonhalos(
     print 'ninhalos = ',ninhalos
     print 'size of xpin = ',len(xpin) 
 	
+def stackonhalos(
+    np.ndarray xp,np.ndarray yp,np.ndarray zp,
+    np.ndarray xh,np.ndarray yh,np.ndarray zh,
+    np.ndarray rh,np.ndarray mh, it, jt, kt,ntile):
+      for i in np.arange(it):
+        for j in np.arange(jt):
+          for k in np.arange(kt):
+             xpinc,ypinc,zpinc = stackonhalostile(xp,yp,zp,xh,yh,zh,rh,mh,
+	                                          it,jt,kt)
+             
+		     
+
