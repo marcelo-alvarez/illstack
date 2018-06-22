@@ -1,4 +1,5 @@
 #!/bin/bash
 
 ./clean.sh
-python setup.py install --user
+pip install -e . --user
+#python setup.py install --user
