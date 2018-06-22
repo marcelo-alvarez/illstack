@@ -3,15 +3,15 @@ import numpy             as np
 import matplotlib.pyplot as plt
 
 import illstack as istk
-import illstack.snapshotinfo as ilsp
+#import illstack.snapshotinfo as ilsp
 from illstack.CompHaloProperties import CompHaloProp
 
 import mpi4py.rc
 
 istk.init.initialize('istk-params.txt')
 
-mean_gas_mass = ilsp.meanparticleproperty(135,'gas','Masses')
-print('mean gas particle mass = ',mean_gas_mass)
+#mean_gas_mass = ilsp.meanparticleproperty(135,'gas','Masses')
+#print('mean gas particle mass = ',mean_gas_mass)
 
 
 lims = [0.1,10.]

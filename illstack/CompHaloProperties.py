@@ -22,21 +22,18 @@ class CompHaloProp:
         
         self.radbins = np.append(self.r1,self.r2[-1])
 
-    def ComputeHaloProfile(self,pos,weight,quant,volweight=False,StdDev=False):
+    def ComputeHaloProfile(self,pos,quant,weight,volweight=False,StdDev=False):
 
         rad = np.sqrt( (pos[0,:])**2 + (pos[1,:])**2 + (pos[2,:])**2)
         Volume = 4.*np.pi/3. * (self.r2**3 - self.r1**3)
 
-        qw = weight*quant
-        w = weight
-        print rad
-
-        data_qw = np.histogram(rad, bins=self.radbins, weights=qw)
-        data_w  = np.histogram(rad, bins=self.radbins, weights=w)
+        data_qw = np.histogram(rad, bins=self.radbins, weights=quant*weight)
+        data_w  = np.histogram(rad, bins=self.radbins, weights=weight)
+        data_count = np.histogram(rad, bins=self.radbins)
 
         if (volweight == True):
-            ans = data_qw[0] / Volume
+            BinValue = data_qw[0] / Volume
         else:
-            ans = data_qw[0] / data_w[0]
+            BinValue = data_qw[0] / data_w[0]
 
-        return self.BinCenter, ans
+        return self.BinCenter, BinValue, BinCount
