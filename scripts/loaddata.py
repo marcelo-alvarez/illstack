@@ -29,5 +29,5 @@ if istk.params.rank==0:
     print 'min, max of halo     x-coordinates: ',xh.min(),xh.max()
     print 'min, max of particle x-coordinates: ',xp.min(),xp.max()
 
-istk.cystack.cullonhalos(xp,yp,zp,xh,yh,zh,rh,mh)
+istk.cystack.stackonhalos(xp,yp,zp,xh,yh,zh,rh,mh,8)
 

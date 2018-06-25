@@ -15,7 +15,7 @@ istk.init.initialize('istk-params.txt')
 
 
 lims = [4,15.]
-bins = 10
+bins = 8
 CHP = CompHaloProp(lims,bins)
 
 
