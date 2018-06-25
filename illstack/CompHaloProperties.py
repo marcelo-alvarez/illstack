@@ -22,7 +22,7 @@ class CompHaloProp:
         
         self.radbins = np.append(self.r1,self.r2[-1])
 
-    def ComputeHaloProfile(self,pos,quant,weight,volweight=False,StdDev=False):
+    def ComputeHaloProfile(self,pos,quant,weight,volweight=False,stddev=False,innerbin=False):
         '''
         Returns stacked profile of a given halo
         Input: Partical position (center on Halo), Stacking quantity, Weight for average  
@@ -36,8 +36,19 @@ class CompHaloProp:
         BinCount = np.histogram(rad, bins=self.radbins)
 
         if (volweight == True):
-            BinValue = data_qw[0] / Volume
+            BinValue = data_qw[0] / Volume 
         else:
             BinValue = data_qw[0] / data_w[0]
+
+        #Add in inner bin below inner range
+        if (innerbin == True):
+            data_qw_inner = np.histogram(rad, bins=[0,self.radbins[0]], weights=quant*weight)
+            data_w_inner  = np.histogram(rad, bins=[0,self.radbins[0]], weights=weight)
+            Volume_inner = 4.*np.pi/3. * (self.r1[0]**3)
+
+            if (volweight == True):
+                BinValue[0] += data_qw_inner[0] / Volume_inner
+            else:
+                BinValue[0] += data_qw_inner[0] / data_w_inner[0]
 
         return self.BinCenter, np.nan_to_num(BinValue), BinCount
