@@ -2,6 +2,14 @@
 # and copy to a new file (not this template)
 basepath = '/project/projectdirs/m3058/malvarez/illustris/ill_data'
 serial   = True
+lims     = [1.,1e3] # kpc/h
+bins     = 30 
+
+
+
+
+
+
 
 
 

@@ -10,10 +10,11 @@ def getparameters(filename):
     dict=pdict()
     dict.read_from_file(filename)
 
-    if 'basepath' in dict: 
-        params.basepath = dict['basepath']
-        print 'basepath in dict, basepath = ',dict['basepath']
-    if 'serial'   in dict: params.serial   = dict['serial']
+    if 'basepath'      in dict: params.basepath      = dict['basepath']
+    if 'serial'        in dict: params.serial        = dict['serial']
+    if 'search_radius' in dict: params.search_radius = dict['search_radius']
+    if 'lims'          in dict: params.lims          = dict['lims']
+    if 'bins'          in dict: params.bins          = dict['bins']
 
     return params
 

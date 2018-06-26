@@ -8,13 +8,11 @@ class CompHaloProp:
         self.Bins = bins
 
         if (Linear == True):
-            print ("Linear binning")
             self.BinSize = (self.MaxPos - self.MinPos) / self.Bins
             self.r1 = self.MinPos + self.BinSize * np.arange(self.Bins)
             self.r2 = self.MinPos + self.BinSize * (np.arange(self.Bins) + 1.0)
             self.BinCenter = self.MinPos + self.BinSize * (np.arange(self.Bins)+ 0.5)
         else:
-            print ("Log binning")
             self.BinSize = (np.log(self.MaxPos) - np.log(self.MinPos)) / self.Bins
             self.r1 = self.MinPos * np.exp(self.BinSize * np.arange(self.Bins))
             self.r2 = self.MinPos * np.exp(self.BinSize * (np.arange(self.Bins)+ 1.0))
@@ -51,7 +49,7 @@ class CompHaloProp:
             else:
                 BinValue[0] += data_qw_inner[0] / data_w_inner[0]
 
-        return self.BinCenter, np.nan_to_num(BinValue), BinCount
+        return self.BinCenter, np.nan_to_num(BinValue), BinCount[0]
 
     def ComputeCumulativeProfile(self,pos,quant,volweight=False,stddev=False,innerbin=True):
         '''

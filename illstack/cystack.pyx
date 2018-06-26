@@ -4,11 +4,8 @@ cimport numpy as np
 import params
 
 from illstack.CompHaloProperties import CompHaloProp
-lims = [4,15.]
-bins = 10
-CHP = CompHaloProp(lims,bins)
 search_radius = params.search_radius
-box = 75000. # FIX THIS!!!!
+box = 75000. # NEED TO FIX THIS!!!!
 
 def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights, np.ndarray posh, rh):
 
@@ -29,7 +26,7 @@ def stackonhalostile(
         np.ndarray posh,
         np.ndarray   mh,
         np.ndarray   rh,
-        it, jt, kt,ntile,volweight):
+        it, jt, kt,ntile,volweight,mhmin):
 
     '''
     Parameters
@@ -40,16 +37,15 @@ def stackonhalostile(
 	profiles[:,nhalos]
     '''
 
+    CHP = CompHaloProp(params.lims,params.bins)
+
     rpmax = rh.max()
     rbuff = rpmax * search_radius
 
     xp = posp[:,0]; yp = posp[:,1]; zp = posp[:,2]
     xh = posh[:,0]; yh = posh[:,1]; zh = posh[:,2]
 
-    x1=xp.min(); x2=xp.max()
-    y1=yp.min(); y2=yp.max()
-    z1=zp.min(); z2=zp.max()
-
+    x1=0.; x2=box; y1=0.; y2=box; z1=0.; z2=box;
     dx=(x2-x1)/ntile; dy=(y2-y1)/ntile; dz=(z2-z1)/ntile;
 
     x1p=it*dx; x2p=(it+1)*dx
@@ -65,12 +61,8 @@ def stackonhalostile(
     y1p=y1h-rbuff; y2p=y2h+rbuff
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
-    if x1h>=x2h or y1h>=y2h or z1h>=z2h: 
-        print 'error: too many tiles'
-        print it,jt,kt,x1h,x2h,y1h,y2h,z1h,z2h
-    
     dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
-    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h)]
+    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin)]
 
     xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]; vals=vals[dmp];
     xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh]; mh=mh[dmh]; rh=rh[dmh]
@@ -78,22 +70,20 @@ def stackonhalostile(
     posp  = np.column_stack([xp,yp,zp])
     posh  = np.column_stack([xh,yh,zh])
 
-    nhalos=np.shape(xh)[0]
-    
-    if params.rank==0:
-        print 'after tiling nhalos = ',nhalos
-        print it,jt,kt,'of',ntile,ntile,ntile,' done'
-    
-    ninhalos=0
-    nphalo = np.zeros(nhalos)
-    
     pcen = np.empty((0),float)
     pval = np.empty((0),float)
     pnum = np.empty((0),float)
 
+    nhalos=np.shape(xh)[0]
+    if params.rank==0:
+        print it*ntile**2+jt*ntile+kt+1,'of',ntile**3,'done, nhalos =',nhalos
+    	
     if nhalos == 0:
-        return pcen, pval, pnum, mh
-
+        return pcen, pval, pnum, mh, nhalos
+    
+    ninhalos=0
+    nphalo = np.zeros(nhalos)
+    
     weights = 1.0 + 0*xp
 
     for ih in np.arange(nhalos):    	
@@ -104,9 +94,8 @@ def stackonhalostile(
         pcen = np.append(pcen,pcenc)
         pval = np.append(pval,pvalc)
         pnum = np.append(pnum,pnumc)
-        if ih%100 == 0: print ih,'done out of',nhalos        
 
-    return pcen,pval,pnum,mh
+    return pcen,pval,pnum,mh,nhalos
 	
 def stackonhalos(
         np.ndarray posp,
@@ -114,28 +103,27 @@ def stackonhalos(
         np.ndarray posh,
         np.ndarray   mh,
         np.ndarray   rh,
-        ntile, volweight):
+        ntile, volweight,mhmin):
     
     pcen = np.empty((0),float)
     pval = np.empty((0),float)
     pnum = np.empty((0),float)
     mhpr = np.empty((0),float)
 
-#    for it in np.arange(ntile):
-#        for jt in np.arange(ntile):
-#            for kt in np.arange(ntile):
+    nhalos=0
+    for it in np.arange(ntile):
+        for jt in np.arange(ntile):
+            for kt in np.arange(ntile):
 
-    for it in np.arange(1):
-        for jt in np.arange(1):
-            for kt in np.arange(1):
-                print it, jt, kt
-                pcenc, pvalc, pnumc, mhc = stackonhalostile(posp,vals,posh,mh,rh,
-                                                            it+2,jt+2,kt+2,ntile,volweight)
+                pcenc, pvalc, pnumc, mhc, nhalosc = stackonhalostile(posp,vals,posh,mh,rh,
+                                                                     it,jt,kt,ntile,volweight,mhmin)
                 pcen=np.append(pcen,pcenc)
                 pval=np.append(pval,pvalc)
                 pnum=np.append(pnum,pnumc)
                 mhpr=np.append(mhpr,  mhc)
 
-    return pcen, pval, pnum, mhpr
+                nhalos += nhalosc
+                
+    return pcen, pval, pnum, mhpr,nhalos
 		     
 
