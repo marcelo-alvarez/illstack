@@ -4,8 +4,8 @@ from Cython.Build import cythonize
 import numpy as np
 
 ext_modules = [
-    Extension("illstack.cystack"
-              ,["illstack/cystack.pyx"],
+    Extension("illstack.cyprof"
+              ,["illstack/cyprof.pyx"],
               include_dirs=[np.get_include()]
     ),]
 

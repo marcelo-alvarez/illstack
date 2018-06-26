@@ -15,6 +15,7 @@ valg = stacksg['val']
 r      = stacksd['r']
 nprofs = stacksd['nprofs']
 mh     = stacksd['mh']
+rh     = stacksd['rh']
 
 omegam = 0.3
 omegab = 0.042
@@ -33,7 +34,8 @@ for i in np.arange(nprofs):
     r200m = (3./4./np.pi/rhombar*mh[i]/200.)**(1./3.)
     rhodcur = vald[i,:]/rhodbar
     rhogcur = valg[i,:]/rhobbar
-    xcur    = r/r200m
+#    xcur    = r/r200m
+    xcur    = r/rh[i]
 
     plt.loglog(r/r200m,rhodcur,c='r',alpha=0.3)
     plt.loglog(r/r200m,rhogcur,c='b',alpha=0.3)

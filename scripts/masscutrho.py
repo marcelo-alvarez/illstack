@@ -39,7 +39,7 @@ posh = halos['GroupPos']
 mh   = halos['GroupMass']
 rh   = halos['Group_R_Mean200']
 
-r, val, n, mh, nprofs = istk.cystack.stackonhalos(posp,vals,posh,mh,rh,
+r, val, n, mh, rh, nprofs = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,
                                                   ntile,volweight,mhmin)
 r  =np.reshape(r,  (nprofs,istk.params.bins))
 val=np.reshape(val,(nprofs,istk.params.bins))
@@ -47,5 +47,5 @@ n  =np.reshape(n,  (nprofs,istk.params.bins))
 
 print 'shapes: ',np.shape(r),np.shape(val),np.shape(n),np.shape(mh)
 
-np.savez('stack_'+part_type+'.npz',r=r[0],val=val,n=n,mh=mh,nprofs=nprofs,nbins=istk.params.bins)
+np.savez('stack_'+part_type+'.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins)
 

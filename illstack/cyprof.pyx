@@ -107,9 +107,6 @@ def stackonhalostile(
     y1p=y1h-rbuff; y2p=y2h+rbuff
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
-    xc = (x1p+x2p)/2.; yc = (y1p+y2p)/2.; zc = (z1p+z2p)/2.
-    rmax = np.sqrt(3.)*max(max((x2p-x1p),y2p-y1p),z2p-z1p)/2.
-
     dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
     dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin)]
 
@@ -128,7 +125,7 @@ def stackonhalostile(
         print it*ntile**2+jt*ntile+kt+1,'of',ntile**3,'done, nhalos =',nhalos
     
     if nhalos == 0:
-        return pcen, pval, pnum, mh, nhalos
+        return pcen, pval, pnum, mh, rh, nhalos
     
     ninhalos=0
     nphalo = np.zeros(nhalos)
@@ -145,7 +142,7 @@ def stackonhalostile(
         pval = np.append(pval,pvalc)
         pnum = np.append(pnum,pnumc)
 
-    return pcen,pval,pnum,mh,nhalos
+    return pcen,pval,pnum,mh,rh,nhalos
 	
 def stackonhalos(
         np.ndarray posp,
@@ -159,22 +156,24 @@ def stackonhalos(
     pval = np.empty((0),float)
     pnum = np.empty((0),float)
     mhpr = np.empty((0),float)
+    rhpr = np.empty((0),float)
 
     nhalos=0
     for it in np.arange(ntile):
         for jt in np.arange(ntile):
             for kt in np.arange(ntile):
 
-                pcenc, pvalc, pnumc, mhc, nhalosc = stackonhalostile(posp,vals,posh,mh,
+                pcenc, pvalc, pnumc, mhc, rhc, nhalosc = stackonhalostile(posp,vals,posh,mh,
                                         rh,it,jt,kt,ntile,volweight,mhmin)   
 
                 pcen=np.append(pcen,pcenc)
                 pval=np.append(pval,pvalc)
                 pnum=np.append(pnum,pnumc)
                 mhpr=np.append(mhpr,  mhc)
+                rhpr=np.append(rhpr,  rhc)
 
                 nhalos += nhalosc
                 
-    return pcen, pval, pnum, mhpr,nhalos
+    return pcen, pval, pnum, mhpr, rhpr, nhalos
 		     
 
