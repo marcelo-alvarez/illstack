@@ -79,4 +79,4 @@ class CompHaloProp:
             else:
                 BinValue[0] += data_q_inner[0]
 
-        return self.BinCenter, np.nan_to_num(BinValue), BinCount
+        return self.BinCenter, np.nan_to_num(BinValue), BinCount[0]

@@ -1,4 +1,5 @@
-basepath = './'
-serial   = True
+basepath      = './'
+serial        = True
+search_radius = 2
 
 
