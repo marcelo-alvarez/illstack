@@ -49,3 +49,7 @@ print 'shapes: ',np.shape(r),np.shape(val),np.shape(n),np.shape(mh)
 
 np.savez('stack_'+part_type+'.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins)
 
+#quick average of the profiles
+mean_val = np.mean(val,axis=0)
+std_val = np.std(val,axis=0)
+np.savez('stack_mean_'+part_type+'.npz',r=r[0],mean=mean_val,std=std_val)
