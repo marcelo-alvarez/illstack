@@ -68,7 +68,7 @@ def stackonhalostile(
         np.ndarray posh,
         np.ndarray   mh,
         np.ndarray   rh,
-        it, jt, kt,ntile,volweight,mhmin):
+        it, jt, kt,ntile,volweight,mhmin, mhmax):
 
     '''
     Parameters
@@ -108,7 +108,7 @@ def stackonhalostile(
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
     dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
-    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin)]
+    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin) & (mh<mhmax)]
 
     xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]; vals=vals[dmp];
     xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh]; mh=mh[dmh]; rh=rh[dmh]
@@ -150,7 +150,7 @@ def stackonhalos(
         np.ndarray posh,
         np.ndarray   mh,
         np.ndarray   rh,
-        ntile, volweight,mhmin):
+        ntile, volweight,mhmin, mhmax):
     
     pcen = np.empty((0),float)
     pval = np.empty((0),float)
@@ -164,7 +164,7 @@ def stackonhalos(
             for kt in np.arange(ntile):
 
                 pcenc, pvalc, pnumc, mhc, rhc, nhalosc = stackonhalostile(posp,vals,posh,mh,
-                                        rh,it,jt,kt,ntile,volweight,mhmin)   
+                                        rh,it,jt,kt,ntile,volweight,mhmin, mhmax)   
 
                 pcen=np.append(pcen,pcenc)
                 pval=np.append(pval,pvalc)
