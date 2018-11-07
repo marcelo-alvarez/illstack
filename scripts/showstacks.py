@@ -47,4 +47,6 @@ plt.gca().set_xlabel(r'$r/r_{200m}$',fontsize=20)
 plt.gca().set_ylabel(r'$\rho/\langle\rho\rangle$',fontsize=20)
 plt.gca().set_title(r'all halos with $M>10^{13} M_\odot/h$')
 
+plt.savefig('/Users/emilymoser/Desktop/showstacks.pdf')
+
 plt.show()

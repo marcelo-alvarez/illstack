@@ -5,8 +5,14 @@ import numpy             as np
 
 from scipy.interpolate import *
 from scipy.stats import binned_statistic
+
+#Right now this makes profiles separately for dens/pres, so go into loop and plotting to define
 stacks_dens=np.load(sys.argv[1])
 stacks_pres=np.load(sys.argv[2])
+mlow   = float(sys.argv[3])
+mhigh = float(sys.argv[4])
+mhmin = mlow / 1e10 # minimum mass in 1e10 Msun/h
+mhmax = mhigh / 1e10 # maximum mass in 1e10 Msun/h 
 
 val_dens = stacks_dens['val']
 r_pres   = stacks_pres['r']
@@ -39,18 +45,19 @@ for i in np.arange(nprofs):  #For every halo
 ##This is the different part
 #average the halo masses then use to calculate average r200m that
 #all the profiles will use, instead of each having their own
+
 #mean_pres=np.mean(val_pres, axis=0)
 mean_dens=np.mean(val_dens, axis=0)
 mean_mh=np.mean(mh)
 r200m = (3./4./np.pi/rhombar*mean_mh/200.)**(1./3.)
 x_values=r/r200m
+
 plt.loglog(x_values, mean_dens, color='black', label='Average')
 plt.xlabel(r'$r/r_{200m}$',fontsize=15)
 plt.ylabel(r'Density',fontsize=15)
 plt.legend()
-plt.title(r'all halos with $M>10^{13} M_\odot/h$')
-#plt.savefig('/Users/emilymoser/Desktop/Density_all.png')
-#plt.savefig('/Users/emilymoser/Desktop/Density_all.pdf')
+plt.title(r'z=0.2 halos with $ %s < M < %s M_\odot/h$' % (str(mlow), str(mhigh)))
+#plt.savefig()
 plt.show()
 
 plt.close()
