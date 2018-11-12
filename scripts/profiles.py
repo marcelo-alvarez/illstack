@@ -15,7 +15,7 @@ ntile = 3 # controls tiling -- optimal value not yet clear
 mhmin = mlow / 1e10 # minimum mass in 1e10 Msun/h
 mhmax = mhigh / 1e10 # maximum mass in 1e10 Msun/h
 volweight = True # here we want density so value to bin is mass with a volume weight = true
-snap_num= float(sys.argv[5])  ##New, not hardcoded for z=0
+snap_num= int(sys.argv[5])
 
 omegadm = 0.3 - 0.042
 #Xh=0.76
@@ -54,7 +54,7 @@ mh   = halos['GroupMass']
 rh   = halos['Group_R_Mean200']
 
 r, val, n, mh, rh, nprofs = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,
-                                                  ntile,volweight,mhmin)
+                                                  ntile,volweight,mhmin, mhmax)
 r  =np.reshape(r,  (nprofs,istk.params.bins))
 val=np.reshape(val,(nprofs,istk.params.bins)) 
 n  =np.reshape(n,  (nprofs,istk.params.bins))
