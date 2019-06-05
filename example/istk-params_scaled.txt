@@ -1,0 +1,4 @@
+basepath = '/Users/emilymoser/Repositories/illstack_moser_fork/scripts/illustris_python'
+serial   = True
+lims     = [0.001,100] # scaled radius
+bins     = 25

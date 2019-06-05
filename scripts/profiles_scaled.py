@@ -15,6 +15,7 @@ ntile = 3 # controls tiling -- optimal value not yet clear
 mhmin = mlow / 1e10 # minimum mass in 1e10 Msun/h
 mhmax = mhigh / 1e10 # maximum mass in 1e10 Msun/h
 volweight = True # here we want density so value to bin is mass with a volume weight = true
+scaled_radius=True
 snap_num= int(sys.argv[5])
 
 omegam=0.31
@@ -31,7 +32,7 @@ if prof=='gasdens':
     vals = gas_particles['Masses']   #units 1e10 Msol/h
 elif prof=='dmdens':
     part_type='dm'
-    # HARD CODED BOX SIZE 7.5e4 kpc/h  ##also change something here?
+    # HARD CODED BOX SIZE 7.5e4 kpc/h
     part_massf=2.775e2*omegadm*(7.5e4)**3/1e10 # particle mass in 1e10 Msun/h
     field_list = ['Coordinates'] #base unit ckpc/h
     posp = istk.io.getparticles(snap_num,part_type,field_list) #Change redshift
@@ -55,8 +56,7 @@ posh = halos['GroupPos']
 mh   = halos['Group_M_Crit200']
 rh   = halos['Group_R_Crit200'] #r200c, units ckpc/h
 
-r, val, n, mh, rh, nprofs = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,
-                                                  ntile,volweight,mhmin, mhmax)
+r, val, n, mh, rh, nprofs = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,ntile,volweight,mhmin, mhmax,scaled_radius)
 print "nprofs", nprofs
 r  =np.reshape(r,  (nprofs,istk.params.bins))
 val=np.reshape(val,(nprofs,istk.params.bins)) 
@@ -64,10 +64,4 @@ n  =np.reshape(n,  (nprofs,istk.params.bins))
 
 print 'shapes: ','r', np.shape(r),'val', np.shape(val),'n', np.shape(n),'mh', np.shape(mh)
 
-#np.savez('stack_'+prof+'_ill_12.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins)
-
-#quick average of the profiles
-mean_val = np.mean(val,axis=0)
-std_val = np.std(val,axis=0)
-#np.savez('stack_mean_'+prof+'_14.npz',r=r[0],mean=mean_val,std=std_val)
-#print "mean_val shape from profiles.py", np.shape(mean_val)
+np.savez('stack_'+prof+'_scaled_12.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins)
