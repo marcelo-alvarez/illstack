@@ -3,7 +3,7 @@ import numpy as np
 cimport numpy as np
 import params
 
-from illstack.CompHaloProperties import CompHaloProp
+from illstack.CompHaloProperties_test import CompHaloProp
 search_radius = params.search_radius
 box = 75000. # NEED TO FIX THIS!!!!
 
@@ -68,7 +68,7 @@ def stackonhalostile(
         np.ndarray posh,
         np.ndarray   mh,
         np.ndarray   rh,
-        it, jt, kt,ntile,volweight,mhmin, mhmax):
+        it, jt, kt,ntile,volweight,mhmin, mhmax,scaled_radius):
 
     '''
     Parameters
@@ -135,9 +135,9 @@ def stackonhalostile(
 #    posp, vals, weights = precull(posp,vals,weights,posh,rh)
 
     for ih in np.arange(nhalos):    	
-
-        pospc, valsc, weightsc = cull_and_center(posp,vals,weights,posh[ih],rh[ih])    
-        pcenc, pvalc, pnumc = CHP.ComputeHaloProfile(pospc,valsc,weightsc,volweight=volweight)
+        pospc, valsc, weightsc = cull_and_center(posp,vals,weights,posh[ih],rh[ih])
+        scale=rh[ih]
+        pcenc, pvalc, pnumc = CHP.ComputeHaloProfile(pospc,valsc,weightsc,scale,volweight=volweight,scaled_radius=scaled_radius)
         pcen = np.append(pcen,pcenc)
         pval = np.append(pval,pvalc)
         pnum = np.append(pnum,pnumc)
@@ -150,7 +150,7 @@ def stackonhalos(
         np.ndarray posh,
         np.ndarray   mh,
         np.ndarray   rh,
-        ntile, volweight,mhmin, mhmax):
+        ntile, volweight,mhmin, mhmax,scaled_radius):
     
     pcen = np.empty((0),float)
     pval = np.empty((0),float)
@@ -164,7 +164,7 @@ def stackonhalos(
             for kt in np.arange(ntile):
 
                 pcenc, pvalc, pnumc, mhc, rhc, nhalosc = stackonhalostile(posp,vals,posh,mh,
-                                        rh,it,jt,kt,ntile,volweight,mhmin, mhmax)   
+                                        rh,it,jt,kt,ntile,volweight,mhmin,mhmax,scaled_radius)   
 
                 pcen=np.append(pcen,pcenc)
                 pval=np.append(pval,pvalc)
