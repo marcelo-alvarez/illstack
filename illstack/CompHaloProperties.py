@@ -20,15 +20,21 @@ class CompHaloProp:
         
         self.radbins = np.append(self.r1,self.r2[-1])
 
-    def ComputeHaloProfile(self,pos,quant,weight,volweight=False,stddev=False,innerbin=False):
+    def ComputeHaloProfile(self,pos,quant,weight,scale,volweight=False,stddev=False,innerbin=False,scaled_radius=False):
         '''
         Returns stacked profile of a given halo
         Input: Partical position (center on Halo), Stacking quantity, Weight for average  
         Output: Bin center, Stack profile, Particle count 
         '''
         rad = np.sqrt( (pos[:,0])**2 + (pos[:,1])**2 + (pos[:,2])**2)
-        Volume = 4.*np.pi/3. * (self.r2**3 - self.r1**3)
 
+        if (scaled_radius == True):
+            rad=rad/scale
+            Volume = 4.*np.pi/3. * ((self.r2*scale)**3 - (self.r1*scale)**3)
+        else:
+            rad=rad
+            Volume = 4.*np.pi/3. * (self.r2**3 - self.r1**3)
+        
         data_qw = np.histogram(rad, bins=self.radbins, weights=quant*weight)
         data_w  = np.histogram(rad, bins=self.radbins, weights=weight)
         BinCount = np.histogram(rad, bins=self.radbins)
@@ -51,7 +57,7 @@ class CompHaloProp:
 
         return self.BinCenter, np.nan_to_num(BinValue), BinCount[0]
 
-    def ComputeCumulativeProfile(self,pos,quant,volweight=False,stddev=False,innerbin=True):
+    def ComputeCumulativeProfile(self,pos,quant,volweight=False,stddev=False,innerbin=True, scaled_radius=False):
         '''
         Returns stacked cumulative profile of a given halo
         Input: Partical position (center on Halo), Stacking quantity
@@ -62,6 +68,9 @@ class CompHaloProp:
 
         data_q = np.histogram(rad, bins=self.radbins, weights=quant)
         BinCount = np.histogram(rad, bins=self.radbins)
+
+        if (scaled_radius == True):
+            rad=rad/scaled_radius
 
         if (volweight == True):
             BinValue = data_q[0] / Volume

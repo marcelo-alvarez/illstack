@@ -3,18 +3,21 @@ import numpy as np
 cimport numpy as np
 import params
 
-from illstack.CompHaloProperties_test import CompHaloProp
+from illstack.CompHaloProperties import CompHaloProp
 search_radius = params.search_radius
 box = 75000. # NEED TO FIX THIS!!!!
 
 def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights, 
-                    np.ndarray posh, rh):
+                    np.ndarray posh, rh,scaled_radius):
 
     xp = posp[:,0]-posh[0]; yp=posp[:,1]-posh[1]; zp=posp[:,2]-posh[2]
-    r = np.sqrt(
-        xp**2+yp**2+zp**2
-        ) 
-    dm = [r < search_radius * rh]
+    #check this
+    if (scaled_radius == True): 
+        r = np.sqrt(xp**2+yp**2+zp**2)/rh
+        dm = [r < search_radius]
+    else:
+        r = np.sqrt(xp**2+yp**2+zp**2)
+        dm = [r < search_radius * rh]
 
     xp=xp[dm];yp=yp[dm];zp=zp[dm];vals=vals[dm];weights=weights[dm]
     posp=np.column_stack([xp,yp,zp])
@@ -82,7 +85,7 @@ def stackonhalostile(
     CHP = CompHaloProp(params.lims,params.bins)
 
     rpmax = rh.max()
-    rbuff = rpmax * search_radius
+    rbuff=rpmax*search_radius
 
     xp = posp[:,0]; yp = posp[:,1]; zp = posp[:,2]
     xh = posh[:,0]; yh = posh[:,1]; zh = posh[:,2]
@@ -135,7 +138,7 @@ def stackonhalostile(
 #    posp, vals, weights = precull(posp,vals,weights,posh,rh)
 
     for ih in np.arange(nhalos):    	
-        pospc, valsc, weightsc = cull_and_center(posp,vals,weights,posh[ih],rh[ih])
+        pospc, valsc, weightsc = cull_and_center(posp,vals,weights,posh[ih],rh[ih],scaled_radius=scaled_radius)
         scale=rh[ih]
         pcenc, pvalc, pnumc = CHP.ComputeHaloProfile(pospc,valsc,weightsc,scale,volweight=volweight,scaled_radius=scaled_radius)
         pcen = np.append(pcen,pcenc)
