@@ -6,17 +6,20 @@ import matplotlib.pyplot as plt
 import illstack as istk
 
 import mpi4py.rc
+from decimal import Decimal
 
 istk.init.initialize(sys.argv[1])
 prof = str(sys.argv[2])  #This is getting specific profile (gas density, gas thermal pressure, dm)
-mlow   = float(sys.argv[3])
-mhigh = float(sys.argv[4])
+mcenter=float(sys.argv[3])
 ntile = 3 # controls tiling -- optimal value not yet clear
+
+mlow=0.8*mcenter
+mhigh=1.2*mcenter
 mhmin = mlow / 1e10 # minimum mass in 1e10 Msun/h
 mhmax = mhigh / 1e10 # maximum mass in 1e10 Msun/h
 volweight = True # here we want density so value to bin is mass with a volume weight = true
 scaled_radius=True
-snap_num= int(sys.argv[5])
+snap_num= int(sys.argv[4])
 
 omegam=0.31
 omegab=0.0486
@@ -24,13 +27,17 @@ omegadm =omegam-omegab
 #Xh=0.76
 gamma = 5./3.
 
+print "Mass centered on %f"%mcenter
+
 if prof=='gasdens':
+    print "Completing profiles for gasdens"
     part_type='gas'
     field_list = ['Coordinates','Masses']
     gas_particles = istk.io.getparticles(snap_num,part_type,field_list) #Change redshift
     posp = gas_particles['Coordinates'] #position, base unit ckpc/h 
     vals = gas_particles['Masses']   #units 1e10 Msol/h
 elif prof=='dmdens':
+    print "Completing profiles for dmdens"
     part_type='dm'
     # HARD CODED BOX SIZE 7.5e4 kpc/h
     part_massf=2.775e2*omegadm*(7.5e4)**3/1e10 # particle mass in 1e10 Msun/h
@@ -39,6 +46,7 @@ elif prof=='dmdens':
     vals = posp[:,0]*0 + part_massf / np.shape(posp)[0]
     print 'setting dm particle mass to = ',vals[0]*1e10,'Msun/h'
 elif prof=='gaspth':
+    print "Completing profiles for gaspth"
     part_type='gas'
     field_list = ['Coordinates','Masses','InternalEnergy']
     gas_particles = istk.io.getparticles(snap_num,part_type,field_list) #Change redshift
@@ -52,7 +60,7 @@ else:
 field_list = ['Group_M_Crit200','GroupPos','Group_R_Crit200']
 halos = istk.io.gethalos(snap_num,field_list) #Change redshift
 
-posh = halos['GroupPos']
+posh = halos['GroupPos'] #kpc/h
 mh   = halos['Group_M_Crit200']
 rh   = halos['Group_R_Crit200'] #r200c, units ckpc/h
 
@@ -64,4 +72,9 @@ n  =np.reshape(n,  (nprofs,istk.params.bins))
 
 print 'shapes: ','r', np.shape(r),'val', np.shape(val),'n', np.shape(n),'mh', np.shape(mh)
 
-np.savez('stack_'+prof+'_scaled_12.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins)
+mcenter=Decimal(mcenter)
+mcenter='{:.2e}'.format(mcenter)
+mcenter_power=np.log10(float(mcenter))
+mcenter_power=str(int(mcenter_power))
+
+np.savez('stack_'+prof+'_scaled_ill_'+mcenter_power+'.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins)
