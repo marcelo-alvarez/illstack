@@ -20,6 +20,8 @@ def getsubhalos(snapshot_number,field_list):
     basePath=params.basepath
     return il.groupcat.loadSubhalos(basePath, snapshot_number,fields=field_list)
 
-
+def getsubhalos(snapshot_number,field_list):
+    basePath=params.basepath
+    return il.groupcat.loadSubhalos(basePath, snapshot_number,fields=field_list)
 
 
