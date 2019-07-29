@@ -8,13 +8,16 @@ search_radius = params.search_radius
 box = 75000. # NEED TO FIX THIS!!!!
 
 def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights, 
-                    np.ndarray posh, rh):
+                    np.ndarray posh, rh,scaled_radius):
 
     xp = posp[:,0]-posh[0]; yp=posp[:,1]-posh[1]; zp=posp[:,2]-posh[2]
-    r = np.sqrt(
-        xp**2+yp**2+zp**2
-        ) 
-    dm = [r < search_radius * rh]
+    #check this
+    if (scaled_radius == True): 
+        r = np.sqrt(xp**2+yp**2+zp**2)/rh
+        dm = [r < search_radius]
+    else:
+        r = np.sqrt(xp**2+yp**2+zp**2)
+        dm = [r < search_radius * rh]
 
     xp=xp[dm];yp=yp[dm];zp=zp[dm];vals=vals[dm];weights=weights[dm]
     posp=np.column_stack([xp,yp,zp])
@@ -68,7 +71,7 @@ def stackonhalostile(
         np.ndarray posh,
         np.ndarray   mh,
         np.ndarray   rh,
-        it, jt, kt,ntile,volweight,mhmin, mhmax):
+        it, jt, kt,ntile,volweight,mhmin, mhmax,scaled_radius,GroupFirstSub,sfr,mstar):
 
     '''
     Parameters
@@ -82,7 +85,7 @@ def stackonhalostile(
     CHP = CompHaloProp(params.lims,params.bins)
 
     rpmax = rh.max()
-    rbuff = rpmax * search_radius
+    rbuff=rpmax*search_radius
 
     xp = posp[:,0]; yp = posp[:,1]; zp = posp[:,2]
     xh = posh[:,0]; yh = posh[:,1]; zh = posh[:,2]
@@ -111,7 +114,7 @@ def stackonhalostile(
     dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin) & (mh<mhmax)]
 
     xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]; vals=vals[dmp];
-    xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh]; mh=mh[dmh]; rh=rh[dmh]
+    xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh]; mh=mh[dmh]; rh=rh[dmh]; GroupFirstSub=GroupFirstSub[dmh]; sfr=sfr[dmh];mstar=mstar[dmh]
 
     posp  = np.column_stack([xp,yp,zp])
     posh  = np.column_stack([xh,yh,zh])
@@ -125,7 +128,7 @@ def stackonhalostile(
         print it*ntile**2+jt*ntile+kt+1,'of',ntile**3,'done, nhalos =',nhalos
     
     if nhalos == 0:
-        return pcen, pval, pnum, mh, rh, nhalos
+        return pcen, pval, pnum, mh, rh, nhalos, GroupFirstSub,sfr,mstar
     
     ninhalos=0
     nphalo = np.zeros(nhalos)
@@ -135,14 +138,14 @@ def stackonhalostile(
 #    posp, vals, weights = precull(posp,vals,weights,posh,rh)
 
     for ih in np.arange(nhalos):    	
-
-        pospc, valsc, weightsc = cull_and_center(posp,vals,weights,posh[ih],rh[ih])    
-        pcenc, pvalc, pnumc = CHP.ComputeHaloProfile(pospc,valsc,weightsc,volweight=volweight)
+        pospc, valsc, weightsc = cull_and_center(posp,vals,weights,posh[ih],rh[ih],scaled_radius=scaled_radius)
+        scale=rh[ih]
+        pcenc, pvalc, pnumc = CHP.ComputeHaloProfile(pospc,valsc,weightsc,scale,volweight=volweight,scaled_radius=scaled_radius)
         pcen = np.append(pcen,pcenc)
         pval = np.append(pval,pvalc)
         pnum = np.append(pnum,pnumc)
 
-    return pcen,pval,pnum,mh,rh,nhalos
+    return pcen,pval,pnum,mh,rh,nhalos,GroupFirstSub,sfr,mstar
 	
 def stackonhalos(
         np.ndarray posp,
@@ -150,30 +153,33 @@ def stackonhalos(
         np.ndarray posh,
         np.ndarray   mh,
         np.ndarray   rh,
-        ntile, volweight,mhmin, mhmax):
+        ntile, volweight,mhmin, mhmax,scaled_radius,GroupFirstSub,sfr,mstar):
     
     pcen = np.empty((0),float)
     pval = np.empty((0),float)
     pnum = np.empty((0),float)
     mhpr = np.empty((0),float)
     rhpr = np.empty((0),float)
-
+    GroupFirstSubpr=np.empty((0),float)
+    sfrpr= np.empty((0),float)
+    mstarpr=np.empty((0),float)
     nhalos=0
     for it in np.arange(ntile):
         for jt in np.arange(ntile):
             for kt in np.arange(ntile):
 
-                pcenc, pvalc, pnumc, mhc, rhc, nhalosc = stackonhalostile(posp,vals,posh,mh,
-                                        rh,it,jt,kt,ntile,volweight,mhmin, mhmax)   
+                pcenc, pvalc, pnumc, mhc, rhc, nhalosc,GroupFirstSubc,sfrc,mstarc = stackonhalostile(posp,vals,posh,mh,rh,it,jt,kt,ntile,volweight,mhmin,mhmax,scaled_radius,GroupFirstSub,sfr,mstar)   
 
                 pcen=np.append(pcen,pcenc)
                 pval=np.append(pval,pvalc)
                 pnum=np.append(pnum,pnumc)
                 mhpr=np.append(mhpr,  mhc)
                 rhpr=np.append(rhpr,  rhc)
-
+                GroupFirstSubpr=np.append(GroupFirstSubpr, GroupFirstSubc)
+                sfrpr=np.append(sfrpr,sfrc)
+                mstarpr=np.append(mstarpr,mstarc)
                 nhalos += nhalosc
                 
-    return pcen, pval, pnum, mhpr, rhpr, nhalos
+    return pcen, pval, pnum, mhpr, rhpr, nhalos, GroupFirstSubpr,sfrpr,mstarpr
 		     
 

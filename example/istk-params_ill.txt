@@ -1,0 +1,4 @@
+basepath = '/global/cscratch1/sd/emm376/Illustris-3/output'
+serial   = True
+lims     = [0.01,10] # scaled radius
+bins     = 25

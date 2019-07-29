@@ -1,0 +1,4 @@
+basepath = '/Users/emilymoser/Repositories/illstack_moser_fork/scripts/illustris_python'
+serial   = True
+lims     = [1.,10e3] # kpc/h  #change this to be x=r/r200m, binned in x not r
+bins     = 25
