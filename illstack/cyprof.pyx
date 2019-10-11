@@ -7,10 +7,37 @@ from illstack.CompHaloProperties import CompHaloProp
 search_radius = params.search_radius
 box = 75000. # NEED TO FIX THIS!!!!
 
+def periodic_bcs(np.ndarray posp,np.ndarray posh):
+    
+    xp = posp[:,0]
+    yp = posp[:,1]
+    zp = posp[:,2]
+
+    xh = posh[:,0]
+    yh = posh[:,1]
+    zh = posh[:,2]
+
+    xdel = xp - xh
+    ydel = yp - yh
+    zdel = zp - zh
+
+    xp[xdel >= box/2.] = xp[xdel >= box/2.] - box
+    xp[xdel < -1.*box/2.] = xp[xdel < -1. *box/2.] + box 
+    yp[ydel >= box/2.] = yp[ydel >= box/2.] - box
+    yp[ydel < -1.*box/2.] = yp[ydel < -1. *box/2.] + box 
+    zp[zdel >= box/2.] = zp[zdel >= box/2.] - box
+    zp[zdel < -1.*box/2.] = zp[zdel < -1. *box/2.] + box 
+    
+    posp=np.column_stack([xp,yp,zp])
+
+    return posp
+
 def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights, 
                     np.ndarray posh, rh,scaled_radius):
 
-    xp = posp[:,0]-posh[0]; yp=posp[:,1]-posh[1]; zp=posp[:,2]-posh[2]
+    posp_new = periodic_bcs(posp,posh)
+
+    xp = posp_new[:,0]-posh[0]; yp=posp_new[:,1]-posh[1]; zp=posp_new[:,2]-posh[2]
     #check this
     if (scaled_radius == True): 
         r = np.sqrt(xp**2+yp**2+zp**2)/rh
@@ -110,13 +137,15 @@ def stackonhalostile(
     y1p=y1h-rbuff; y2p=y2h+rbuff
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
-    dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
-    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin) & (mh<mhmax)]
+#    dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
+#    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin) & (mh<mhmax)]
 
-    xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]; vals=vals[dmp];
+    dmh = [(mh>mhmin) & (mh<mhmax)]
+
+#    xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]; vals=vals[dmp];
     xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh]; mh=mh[dmh]; rh=rh[dmh]; GroupFirstSub=GroupFirstSub[dmh]; sfr=sfr[dmh];mstar=mstar[dmh]
 
-    posp  = np.column_stack([xp,yp,zp])
+#    posp  = np.column_stack([xp,yp,zp])
     posh  = np.column_stack([xh,yh,zh])
 
     pcen = np.empty((0),float)
