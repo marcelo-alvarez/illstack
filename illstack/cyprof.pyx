@@ -33,9 +33,7 @@ def periodic_bcs(np.ndarray posp,np.ndarray posh):
     return posp
 
 def add_ghost_particles(posc,vals,maxrad):
-    posc_new = np.empty((0),float)
     posc_ghosts = np.empty((0),float)
-    vals_new = np.empty((0),float)
     vals_ghosts = np.empty((0),float)
 
     x1 = -maxrad; y1 = -maxrad; z1 = -maxrad
@@ -148,9 +146,9 @@ def stackonhalostile(
 
     dx=(x2-x1)/ntile; dy=(y2-y1)/ntile; dz=(z2-z1)/ntile;
 
-    x1p=it*dx; x2p=(it+1)*dx
-    y1p=jt*dy; y2p=(jt+1)*dy
-    z1p=kt*dz; z2p=(kt+1)*dz
+    x1h=it*dx; x2h=(it+1)*dx
+    y1h=jt*dy; y2h=(jt+1)*dy
+    z1h=kt*dz; z2h=(kt+1)*dz
 
     # select halos sufficiently far from box edges so as not to have to do periodic wrapping
     #x1h=max(x1p,rbuff); x2h=min(x2p,box-rbuff)
@@ -161,7 +159,7 @@ def stackonhalostile(
     y1p=y1h-rbuff; y2p=y2h+rbuff
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
-    x1h=x1p; x2h=x2p; y1h=y1p; y2h=y2p; z1h=z1p;z2h=z2p
+    #x1h=x1p; x2h=x2p; y1h=y1p; y2h=y2p; z1h=z1p;z2h=z2p
 
     dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
     dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin) & (mh<mhmax)]
