@@ -7,10 +7,57 @@ from illstack.CompHaloProperties import CompHaloProp
 search_radius = params.search_radius
 box = 75000. # NEED TO FIX THIS!!!!
 
+def periodic_bcs(np.ndarray posp,np.ndarray posh):
+    
+    xp = posp[:,0]
+    yp = posp[:,1]
+    zp = posp[:,2]
+
+    xh = posh[0]
+    yh = posh[1]
+    zh = posh[2]
+
+    xdel = xp - xh
+    ydel = yp - yh
+    zdel = zp - zh
+
+    xp[xdel >= box/2.] = xp[xdel >= box/2.] - box
+    xp[xdel < -1.*box/2.] = xp[xdel < -1. *box/2.] + box 
+    yp[ydel >= box/2.] = yp[ydel >= box/2.] - box
+    yp[ydel < -1.*box/2.] = yp[ydel < -1. *box/2.] + box 
+    zp[zdel >= box/2.] = zp[zdel >= box/2.] - box
+    zp[zdel < -1.*box/2.] = zp[zdel < -1. *box/2.] + box 
+    
+    posp=np.column_stack([xp,yp,zp])
+
+    return posp
+
+def add_ghost_particles(posc,vals,maxrad):
+    posc_ghosts = np.empty((0),float)
+    vals_ghosts = np.empty((0),float)
+
+    x1 = -maxrad; y1 = -maxrad; z1 = -maxrad
+    x2 = boxsize + maxrad; y2 = boxsize + maxrad; z2 = boxsize + maxrad
+    for i in (-1,0,1):
+        for j in (-1,0,1):
+            for k in (-1,0,1):
+                xp = posc[:,0] + i*boxsize
+                yp = posc[:,1] + j*boxsize
+                zp = posc[:,2] + k*boxsize
+                dm = [(xp>x1) & (xp<x2) & (yp>y1) & (yp<y2) & (zp>z1) & (zp<z2)]
+                posc_new = np.column_stack([xp[dm], yp[dm],zp[dm]]); vals_new = vals[dm]
+                posc_ghosts = np.concatenate((posc_ghosts,posc_new))
+                vals_ghosts = np.concatenate((vals_ghosts,vals_new))
+
+    return posc_ghosts, vals_ghosts
+
+
 def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights, 
                     np.ndarray posh, rh,scaled_radius):
 
-    xp = posp[:,0]-posh[0]; yp=posp[:,1]-posh[1]; zp=posp[:,2]-posh[2]
+    #posp_new = periodic_bcs(posp,posh)
+
+    xp = posp_new[:,0]-posh[0]; yp=posp_new[:,1]-posh[1]; zp=posp_new[:,2]-posh[2]
     #check this
     if (scaled_radius == True): 
         r = np.sqrt(xp**2+yp**2+zp**2)/rh
@@ -87,6 +134,8 @@ def stackonhalostile(
     rpmax = rh.max()
     rbuff=rpmax*search_radius
 
+    posp,vals = add_ghost_particles(posp,vals,rbuff)
+
     xp = posp[:,0]; yp = posp[:,1]; zp = posp[:,2]
     xh = posh[:,0]; yh = posh[:,1]; zh = posh[:,2]
 
@@ -97,21 +146,25 @@ def stackonhalostile(
 
     dx=(x2-x1)/ntile; dy=(y2-y1)/ntile; dz=(z2-z1)/ntile;
 
-    x1p=it*dx; x2p=(it+1)*dx
-    y1p=jt*dy; y2p=(jt+1)*dy
-    z1p=kt*dz; z2p=(kt+1)*dz
+    x1h=it*dx; x2h=(it+1)*dx
+    y1h=jt*dy; y2h=(jt+1)*dy
+    z1h=kt*dz; z2h=(kt+1)*dz
 
     # select halos sufficiently far from box edges so as not to have to do periodic wrapping
-    x1h=max(x1p,rbuff); x2h=min(x2p,box-rbuff)
-    y1h=max(y1p,rbuff); y2h=min(y2p,box-rbuff)
-    z1h=max(z1p,rbuff); z2h=min(z2p,box-rbuff)
+    #x1h=max(x1p,rbuff); x2h=min(x2p,box-rbuff)
+    #y1h=max(y1p,rbuff); y2h=min(y2p,box-rbuff)
+    #z1h=max(z1p,rbuff); z2h=min(z2p,box-rbuff)
 
     x1p=x1h-rbuff; x2p=x2h+rbuff
     y1p=y1h-rbuff; y2p=y2h+rbuff
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
+    #x1h=x1p; x2h=x2p; y1h=y1p; y2h=y2p; z1h=z1p;z2h=z2p
+
     dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
     dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin) & (mh<mhmax)]
+
+    #dmh = [(mh>mhmin) & (mh<mhmax)]
 
     xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]; vals=vals[dmp];
     xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh]; mh=mh[dmh]; rh=rh[dmh]; GroupFirstSub=GroupFirstSub[dmh]; sfr=sfr[dmh];mstar=mstar[dmh]

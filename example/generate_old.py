@@ -1,12 +1,12 @@
 import numpy as np
 import subprocess
 
-sim=np.array(['tng','ill'])
-#sim=np.array(['tng'])
-mass=np.array([1e12,1e13])
-mcenter_power=np.array([12,13])
-cut=np.array(['no_cut','color','sfr','mstar'])
-#cut=np.array(['mstar'])
+#sim=np.array(['tng','ill'])
+sim=np.array(['tng'])
+mass=np.array([1e12])
+mcenter_power=np.array([12])
+#cut=np.array(['no_cut','color','sfr','mstar'])
+cut=np.array(['sfr'])
 #If we don't want the radius values scaled go into profiles_*.py
 prof1='dmdens'
 prof2='gasdens'
@@ -21,8 +21,8 @@ for k in np.arange(len(sim)):
         snap=np.array(['085',100,120])
         #snap=np.array(['120'])
     else:
-        snap=np.array(['084','064','050'])
-        #snap=np.array(['084'])
+        #snap=np.array(['084','064','050'])
+        snap=np.array(['084'])
     for j in np.arange(len(snap)):
         for i in np.arange(len(mass)): 
             f=open('getprof_temp_profiles.sh','w')
