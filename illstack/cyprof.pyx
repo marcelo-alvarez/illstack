@@ -121,12 +121,15 @@ def precull(np.ndarray posp, np.ndarray vals, np.ndarray weights,
     return posp,vals,weights
 
 def stackonhalostile(
-        np.ndarray posp,
-        np.ndarray   vals,
-        np.ndarray posh,
-        np.ndarray   mh,
-        np.ndarray   rh,
-        it, jt, kt,ntile,volweight,mhmin, mhmax,scaled_radius,GroupFirstSub,sfr,mstar):
+        np.ndarray          pospi,
+        np.ndarray          valsi,
+        np.ndarray          poshi,
+        np.ndarray            mhi,
+        np.ndarray            rhi,
+	np.ndarray GroupFirstSubi,
+	np.ndarray           sfri,
+	np.ndarray         mstari,
+        it, jt, kt,ntile,volweight,mhmin, mhmax,scaled_radius):
 
     '''
     Parameters
@@ -142,41 +145,36 @@ def stackonhalostile(
     rpmax = rh.max()
     rbuff=rpmax*search_radius
 
-    xp = posp[:,0]; yp = posp[:,1]; zp = posp[:,2]
-    xh = posh[:,0]; yh = posh[:,1]; zh = posh[:,2]
+    xp = pospi[:,0]; yp = pospi[:,1]; zp = pospi[:,2]
+    xh = poshi[:,0]; yh = poshi[:,1]; zh = poshi[:,2]
 
     x1=0.; x2=box; y1=0.; y2=box; z1=0.; z2=box;
-#    x1=xp.min(); x2=xp.max()
-#    y1=yp.min(); y2=yp.max()
-#    z1=zp.min(); z2=zp.max()
-
     dx=(x2-x1)/ntile; dy=(y2-y1)/ntile; dz=(z2-z1)/ntile;
 
     x1h=it*dx; x2h=(it+1)*dx
     y1h=jt*dy; y2h=(jt+1)*dy
     z1h=kt*dz; z2h=(kt+1)*dz
 
-    # select halos sufficiently far from box edges so as not to have to do periodic wrapping
-    #x1h=max(x1p,rbuff); x2h=min(x2p,box-rbuff)
-    #y1h=max(y1p,rbuff); y2h=min(y2p,box-rbuff)
-    #z1h=max(z1p,rbuff); z2h=min(z2p,box-rbuff)
-
     x1p=x1h-rbuff; x2p=x2h+rbuff
     y1p=y1h-rbuff; y2p=y2h+rbuff
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
-    #x1h=x1p; x2h=x2p; y1h=y1p; y2h=y2p; z1h=z1p;z2h=z2p
-
     dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
     dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin) & (mh<mhmax)]
 
-    #dmh = [(mh>mhmin) & (mh<mhmax)]
-
-    xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]; vals=vals[dmp];
-    xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh]; mh=mh[dmh]; rh=rh[dmh]; GroupFirstSub=GroupFirstSub[dmh]; sfr=sfr[dmh];mstar=mstar[dmh]
+    xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]
+    xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh] 
 
     posp  = np.column_stack([xp,yp,zp])
     posh  = np.column_stack([xh,yh,zh])
+
+    vals          = valsi[dmp]
+
+    mh    	  = mhi[dmh]
+    rh            = rhi[dmh] 
+    GroupFirstSub = GroupFirstSubi[dmh] 
+    sfr           = sfri[dmh]
+    mstar         = mstari[dmh]
 
     pcen = np.empty((0),float)
     pval = np.empty((0),float)
@@ -207,12 +205,12 @@ def stackonhalostile(
     return pcen,pval,pnum,mh,rh,nhalos,GroupFirstSub,sfr,mstar
 	
 def stackonhalos(
-        np.ndarray posp,
-        np.ndarray vals,
-        np.ndarray posh,
-        np.ndarray   mh,
-        np.ndarray   rh,
-        ntile, volweight,mhmin, mhmax,scaled_radius,GroupFirstSub,sfr,mstar):
+        np.ndarray          posp,
+        np.ndarray          vals,
+        np.ndarray          posh,
+        np.ndarray            mh,
+        np.ndarray            rh,
+        ntile, volweight,mhmin, mhmax,scaled_radius):
 
     rpmax = rh.max()
     rbuff = rpmax*search_radius
