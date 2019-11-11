@@ -33,22 +33,30 @@ def periodic_bcs(np.ndarray posp,np.ndarray posh):
     return posp
 
 def add_ghost_particles(posc,vals,maxrad):
-    posc_ghosts = np.empty((0),float)
-    vals_ghosts = np.empty((0),float)
+    #posc_ghosts = np.empty((0),float) #we aren't filling these with anything?
+    #vals_ghosts = np.empty((0),float)
+    posc_ghosts= posc
+    vals_ghosts=vals
+    print "vals before", np.shape(vals)
 
     x1 = -maxrad; y1 = -maxrad; z1 = -maxrad
-    x2 = boxsize + maxrad; y2 = boxsize + maxrad; z2 = boxsize + maxrad
+    x2 = box + maxrad; y2 = box + maxrad; z2 = box + maxrad
+
+    #xnew_box_size=x2-x1
+    #print "xnew box size", xnew_box_size
     for i in (-1,0,1):
         for j in (-1,0,1):
             for k in (-1,0,1):
-                xp = posc[:,0] + i*boxsize
-                yp = posc[:,1] + j*boxsize
-                zp = posc[:,2] + k*boxsize
+                xp = posc[:,0] + i*box
+                yp = posc[:,1] + j*box
+                zp = posc[:,2] + k*box
                 dm = [(xp>x1) & (xp<x2) & (yp>y1) & (yp<y2) & (zp>z1) & (zp<z2)]
                 posc_new = np.column_stack([xp[dm], yp[dm],zp[dm]]); vals_new = vals[dm]
                 posc_ghosts = np.concatenate((posc_ghosts,posc_new))
                 vals_ghosts = np.concatenate((vals_ghosts,vals_new))
+                #print "i=",i,"j=",j,"k=",k
 
+    #print "vals_ghosts after ", np.shape(vals_ghosts)
     return posc_ghosts, vals_ghosts
 
 
@@ -56,9 +64,8 @@ def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights,
                     np.ndarray posh, rh,scaled_radius):
 
     #posp_new = periodic_bcs(posp,posh)
-
-    xp = posp_new[:,0]-posh[0]; yp=posp_new[:,1]-posh[1]; zp=posp_new[:,2]-posh[2]
-    #check this
+    #xp = posp_new[:,0]-posh[0]; yp=posp_new[:,1]-posh[1]; zp=posp_new[:,2]-posh[2]
+    xp = posp[:,0]-posh[0]; yp=posp[:,1]-posh[1]; zp=posp[:,2]-posh[2]
     if (scaled_radius == True): 
         r = np.sqrt(xp**2+yp**2+zp**2)/rh
         dm = [r < search_radius]
