@@ -47,6 +47,7 @@ def add_ghost_particles(posc,vals,maxrad):
     for i in (-1,0,1):
         for j in (-1,0,1):
             for k in (-1,0,1):
+	    	if [i==0 and j==0 and k==0]: continue
                 xp = posc[:,0] + i*box
                 yp = posc[:,1] + j*box
                 zp = posc[:,2] + k*box
@@ -141,8 +142,6 @@ def stackonhalostile(
     rpmax = rh.max()
     rbuff=rpmax*search_radius
 
-    posp,vals = add_ghost_particles(posp,vals,rbuff)
-
     xp = posp[:,0]; yp = posp[:,1]; zp = posp[:,2]
     xh = posh[:,0]; yh = posh[:,1]; zh = posh[:,2]
 
@@ -214,6 +213,12 @@ def stackonhalos(
         np.ndarray   mh,
         np.ndarray   rh,
         ntile, volweight,mhmin, mhmax,scaled_radius,GroupFirstSub,sfr,mstar):
+
+    rpmax = rh.max()
+    rbuff = rpmax*search_radius
+    #rbuff=10000.
+
+    posp,vals = add_ghost_particles(posp,vals,rbuff)
     
     pcen = np.empty((0),float)
     pval = np.empty((0),float)
