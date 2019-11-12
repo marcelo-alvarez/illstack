@@ -37,7 +37,7 @@ def add_ghost_particles(posc,vals,maxrad):
     #vals_ghosts = np.empty((0),float)
     posc_ghosts= posc
     vals_ghosts=vals
-    print "vals before", np.shape(vals)
+    #print "vals before", np.shape(vals)
 
     x1 = -maxrad; y1 = -maxrad; z1 = -maxrad
     x2 = box + maxrad; y2 = box + maxrad; z2 = box + maxrad
@@ -56,9 +56,9 @@ def add_ghost_particles(posc,vals,maxrad):
                 posc_new = np.column_stack([xp[dm], yp[dm],zp[dm]]); vals_new = vals[dm]
                 posc_ghosts = np.concatenate((posc_ghosts,posc_new))
                 vals_ghosts = np.concatenate((vals_ghosts,vals_new))
-                print "i=",i,"j=",j,"k=",k
+                #print "i=",i,"j=",j,"k=",k
 
-    print "vals_ghosts after ", np.shape(vals_ghosts)
+    #print "vals_ghosts after ", np.shape(vals_ghosts)
     return posc_ghosts, vals_ghosts
 
 
