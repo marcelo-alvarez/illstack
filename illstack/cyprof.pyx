@@ -205,11 +205,14 @@ def stackonhalostile(
     return pcen,pval,pnum,mh,rh,nhalos,GroupFirstSub,sfr,mstar
 	
 def stackonhalos(
-        np.ndarray          posp,
+	np.ndarray          posp,
         np.ndarray          vals,
         np.ndarray          posh,
         np.ndarray            mh,
         np.ndarray            rh,
+	np.ndarray GroupFirstSub,
+	np.ndarray           sfr,
+	np.ndarray         mstar,
         ntile, volweight,mhmin, mhmax,scaled_radius):
 
     rpmax = rh.max()
