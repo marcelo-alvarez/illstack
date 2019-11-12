@@ -1,4 +1,4 @@
-basepath = '/global/cscratch1/sd/emm376/TNG100-3/output'
+basepath = '/Users/emilymoser/Repositories/TNG_data/TNG100-3/output'
 serial   = True
 lims     = [0.01,10] # scaled radius
 bins     = 25

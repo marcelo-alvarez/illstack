@@ -47,7 +47,8 @@ def add_ghost_particles(posc,vals,maxrad):
     for i in (-1,0,1):
         for j in (-1,0,1):
             for k in (-1,0,1):
-	    	if [i==0 and j==0 and k==0]: continue
+                if [i==0 and j==0 and k==0]: 
+                    continue
                 xp = posc[:,0] + i*box
                 yp = posc[:,1] + j*box
                 zp = posc[:,2] + k*box
@@ -55,9 +56,9 @@ def add_ghost_particles(posc,vals,maxrad):
                 posc_new = np.column_stack([xp[dm], yp[dm],zp[dm]]); vals_new = vals[dm]
                 posc_ghosts = np.concatenate((posc_ghosts,posc_new))
                 vals_ghosts = np.concatenate((vals_ghosts,vals_new))
-                #print "i=",i,"j=",j,"k=",k
+                print "i=",i,"j=",j,"k=",k
 
-    #print "vals_ghosts after ", np.shape(vals_ghosts)
+    print "vals_ghosts after ", np.shape(vals_ghosts)
     return posc_ghosts, vals_ghosts
 
 
@@ -142,7 +143,7 @@ def stackonhalostile(
 
     CHP = CompHaloProp(params.lims,params.bins)
 
-    rpmax = rh.max()
+    rpmax = rhi.max()
     rbuff=rpmax*search_radius
 
     xp = pospi[:,0]; yp = pospi[:,1]; zp = pospi[:,2]
@@ -160,7 +161,7 @@ def stackonhalostile(
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
     dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
-    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mh>mhmin) & (mh<mhmax)]
+    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mhi>mhmin) & (mhi<mhmax)]
 
     xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]
     xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh] 
@@ -234,7 +235,7 @@ def stackonhalos(
         for jt in np.arange(ntile):
             for kt in np.arange(ntile):
 
-                pcenc, pvalc, pnumc, mhc, rhc, nhalosc,GroupFirstSubc,sfrc,mstarc = stackonhalostile(posp,vals,posh,mh,rh,it,jt,kt,ntile,volweight,mhmin,mhmax,scaled_radius,GroupFirstSub,sfr,mstar)   
+                pcenc, pvalc, pnumc, mhc, rhc, nhalosc,GroupFirstSubc,sfrc,mstarc = stackonhalostile(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,it,jt,kt,ntile,volweight,mhmin,mhmax,scaled_radius)   
 
                 pcen=np.append(pcen,pcenc)
                 pval=np.append(pval,pvalc)

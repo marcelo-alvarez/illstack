@@ -73,8 +73,9 @@ halo_mass= halos['GroupMassType']
 mstar= halo_mass[:,4] #stellar mass, 1e10 Msol/h
 
 print "orignal posh", np.shape(posh)
+print "shape of groupfirstsub", np.shape(GroupFirstSub)
 
-r, val, n, mh, rh, nprofs,GroupFirstSub,sfr,mstar = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,ntile,volweight,mhmin, mhmax,scaled_radius,GroupFirstSub,sfr,mstar)
+r, val, n, mh, rh, nprofs,GroupFirstSub,sfr,mstar = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,ntile,volweight,mhmin, mhmax,scaled_radius)
 print "nprofs", nprofs
 r  =np.reshape(r,  (nprofs,istk.params.bins))
 val=np.reshape(val,(nprofs,istk.params.bins)) 
