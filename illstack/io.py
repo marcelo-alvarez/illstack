@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,'/global/cscratch1/sd/emm376/')
+sys.path.insert(0,'/Users/emilymoser/Repositories')
 import illustris_python as il
 import numpy as np
 import params
