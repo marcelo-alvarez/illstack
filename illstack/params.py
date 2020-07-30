@@ -1,6 +1,6 @@
 basepath    = '/home/cemoser/TNG100-3/output'
 serial      = True
-search_radius = 100 #10 scaled
+search_radius = 50 #10 scaled
 lims        = [10e-2,10e4]  #[0.01,10] # scaled radius
 bins        = 25
 mass_option = 1 #Option 1 = upper/lower mass bounds, option 2 = central mass plus percentage range
