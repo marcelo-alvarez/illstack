@@ -1,43 +1,38 @@
 #!/usr/bin/env python
 import sys
-
 import numpy             as np
 import matplotlib.pyplot as plt
 import illstack as istk
-
 import mpi4py.rc
 from decimal import Decimal
 import params_tng
 
 istk.init.initialize(sys.argv[1])
 
-prof = str(sys.argv[2])  #This is getting specific profile (gas density, gas thermal pressure, dm)
+prof = str(sys.argv[2])
 mcenter=float(sys.argv[3])
+snap_num= int(sys.argv[4])
+sim=str(sys.argv[5])
+
 ntile = 3 # controls tiling -- optimal value not yet clear
 
 mass_option = params_tng.mass_option
+mass_kind=params_tng.mass_kind #this is either 'halo' or 'stellar' 
 if mass_option == 1:
     mlow=params_tng.mass_low
     mhigh=params_tng.mass_high
-    print "Proceeding with mass option 1: upper/lower mass range, %s < M < %s"%(str(mlow),str(mhigh))
+    print "Proceeding with mass option 1 for %s mass: upper/lower mass range, %s < M < %s"%(mass_kind,str(mlow),str(mhigh))
 elif mass_option == 2:
-    percentage = params_tng.mass_option_percentage
+    percentage = params_tng.mass_option_percent
     mlow = (1.0-percentage)*mcenter
     mhigh = (1.0+percentage)*mcenter
-    print "Proceeding with mass option 2: central mass and %s percent ranges,%s < M < %s"%(100*percentage,str(mlow),str(mhigh))
-#these are for the +- 20% limits
-#mlow=0.8*mcenter 
-#mhigh=1.2*mcenter
-#mlow=10.**12
-#mhigh=5.*10**14
+    print "Proceeding with mass option 2 for %s mass: central mass and %s percent ranges,%s < M < %s"%(mass_kind,100*percentage,str(mlow),str(mhigh))
 
+mhmin = mlow /1e10 # minimum mass in 1e10 Msun/h
+mhmax = mhigh /1e10 # maximum mass in 1e10 Msun/h
 
-mhmin = mlow / 1e10 # minimum mass in 1e10 Msun/h
-mhmax = mhigh / 1e10 # maximum mass in 1e10 Msun/h
-volweight = params_tng.volweight # here we want density so value to bin is mass with a volume weight = true
+volweight = params_tng.volweight
 scaled_radius=params_tng.scaled_radius
-snap_num= int(sys.argv[4])
-sim=str(sys.argv[5])
 
 omegam=0.31
 omegab=0.0486
@@ -92,7 +87,7 @@ mstar= halo_mass[:,4] #stellar mass, 1e10 Msol/h
 print "orignal posh", np.shape(posh)
 print "shape of groupfirstsub", np.shape(GroupFirstSub)
 
-r, val, n, mh, rh, nprofs,GroupFirstSub,sfr,mstar = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,ntile,volweight,mhmin, mhmax,scaled_radius)
+r, val, n, mh, rh, nprofs,GroupFirstSub,sfr,mstar = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,ntile,volweight,mhmin, mhmax,scaled_radius,mass_kind)
 print "nprofs", nprofs
 r  =np.reshape(r,  (nprofs,istk.params.bins))
 val=np.reshape(val,(nprofs,istk.params.bins)) 
@@ -101,4 +96,6 @@ n  =np.reshape(n,  (nprofs,istk.params.bins))
 print 'shapes: ','r', np.shape(r),'val', np.shape(val),'n', np.shape(n),'mh', np.shape(mh)
 
 #np.savez(prof+'_scaled_'+sim+'_'+str(sys.argv[4])+'_'+mcenter_power+'.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar)
-np.savez(prof+'_scaled_'+sim+'_'+str(sys.argv[4])+'_total.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar)
+np.savez(prof+'_unscaled_'+sim+'_'+str(sys.argv[4])+'_mstar_total_test100.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar)
+
+#np.savez('test.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar)
