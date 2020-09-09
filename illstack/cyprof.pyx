@@ -130,7 +130,7 @@ def stackonhalostile(
 	np.ndarray GroupFirstSubi,
 	np.ndarray           sfri,
 	np.ndarray         mstari,
-        it, jt, kt,ntile,volweight,mhmin, mhmax,scaled_radius):
+        it, jt, kt,ntile,volweight,mhmin, mhmax,scaled_radius,mass_kind):
 
     '''
     Parameters
@@ -161,7 +161,11 @@ def stackonhalostile(
     z1p=z1h-rbuff; z2p=z2h+rbuff
 
     dmp = [(xp>x1p) & (xp<x2p) & (yp>y1p) & (yp<y2p) & (zp>z1p) & (zp<z2p)]
-    dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mhi>mhmin) & (mhi<mhmax)]
+
+    if mass_kind =='stellar':
+        dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mstari>mhmin) & (mstari<mhmax)]
+    elif mass_kind =='halo':
+        dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mhi>mhmin) & (mhi<mhmax)]
 
     xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]
     xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh] 
@@ -214,7 +218,7 @@ def stackonhalos(
 	np.ndarray GroupFirstSub,
 	np.ndarray           sfr,
 	np.ndarray         mstar,
-        ntile, volweight,mhmin, mhmax,scaled_radius):
+        ntile, volweight,mhmin, mhmax,scaled_radius,mass_kind):
 
     rpmax = rh.max()
     rbuff = rpmax*search_radius
@@ -235,7 +239,7 @@ def stackonhalos(
         for jt in np.arange(ntile):
             for kt in np.arange(ntile):
 
-                pcenc, pvalc, pnumc, mhc, rhc, nhalosc,GroupFirstSubc,sfrc,mstarc = stackonhalostile(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,it,jt,kt,ntile,volweight,mhmin,mhmax,scaled_radius)   
+                pcenc, pvalc, pnumc, mhc, rhc, nhalosc,GroupFirstSubc,sfrc,mstarc = stackonhalostile(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,it,jt,kt,ntile,volweight,mhmin,mhmax,scaled_radius,mass_kind)   
 
                 pcen=np.append(pcen,pcenc)
                 pval=np.append(pval,pvalc)
