@@ -33,51 +33,44 @@ def periodic_bcs(np.ndarray posp,np.ndarray posh):
     return posp
 
 def add_ghost_particles(posc,vals,maxrad):
-    #posc_ghosts = np.empty((0),float) #we aren't filling these with anything?
-    #vals_ghosts = np.empty((0),float)
     posc_ghosts= posc
     vals_ghosts=vals
-    #print "vals before", np.shape(vals)
 
     x1 = -maxrad; y1 = -maxrad; z1 = -maxrad
     x2 = box + maxrad; y2 = box + maxrad; z2 = box + maxrad
 
-    #xnew_box_size=x2-x1
-    #print "xnew box size", xnew_box_size
     for i in (-1,0,1):
         for j in (-1,0,1):
             for k in (-1,0,1):
-                if [i==0 and j==0 and k==0]: 
+                if (i==0 and j==0 and k==0): 
                     continue
                 xp = posc[:,0] + i*box
                 yp = posc[:,1] + j*box
                 zp = posc[:,2] + k*box
                 dm = [(xp>x1) & (xp<x2) & (yp>y1) & (yp<y2) & (zp>z1) & (zp<z2)]
+                dm=np.array(dm[0])
                 posc_new = np.column_stack([xp[dm], yp[dm],zp[dm]]); vals_new = vals[dm]
                 posc_ghosts = np.concatenate((posc_ghosts,posc_new))
                 vals_ghosts = np.concatenate((vals_ghosts,vals_new))
-                #print "i=",i,"j=",j,"k=",k
 
-    #print "vals_ghosts after ", np.shape(vals_ghosts)
-    return posc_ghosts, vals_ghosts
+    #print("vals_ghosts after ", np.shape(vals_ghosts))
+    return posc_ghosts,vals_ghosts
 
 
 def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights, 
                     np.ndarray posh, rh,scaled_radius):
 
-    #posp_new = periodic_bcs(posp,posh)
-    #xp = posp_new[:,0]-posh[0]; yp=posp_new[:,1]-posh[1]; zp=posp_new[:,2]-posh[2]
     xp = posp[:,0]-posh[0]; yp=posp[:,1]-posh[1]; zp=posp[:,2]-posh[2]
     if (scaled_radius == True): 
+        #think about scaled option, with rh = rpmax now instead of rh[ih]
         r = np.sqrt(xp**2+yp**2+zp**2)/rh
         dm = [r < search_radius]
     else:
         r = np.sqrt(xp**2+yp**2+zp**2)
         dm = [r < search_radius * rh]
-
+    dm=np.array(dm[0])
     xp=xp[dm];yp=yp[dm];zp=zp[dm];vals=vals[dm];weights=weights[dm]
     posp=np.column_stack([xp,yp,zp])
-
     return posp,vals,weights
 
 def precull(np.ndarray posp, np.ndarray vals, np.ndarray weights, 
@@ -145,7 +138,7 @@ def stackonhalostile(
 
     rpmax = rhi.max()
     rbuff=rpmax*search_radius
-
+    
     xp = pospi[:,0]; yp = pospi[:,1]; zp = pospi[:,2]
     xh = poshi[:,0]; yh = poshi[:,1]; zh = poshi[:,2]
 
@@ -166,6 +159,8 @@ def stackonhalostile(
         dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mstari>mhmin) & (mstari<mhmax)]
     elif mass_kind =='halo':
         dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mhi>mhmin) & (mhi<mhmax)]
+    dmh=np.array(dmh[0])
+    dmp=np.array(dmp[0])
 
     xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]
     xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh] 
@@ -174,7 +169,6 @@ def stackonhalostile(
     posh  = np.column_stack([xh,yh,zh])
 
     vals          = valsi[dmp]
-
     mh    	  = mhi[dmh]
     rh            = rhi[dmh] 
     GroupFirstSub = GroupFirstSubi[dmh] 
@@ -200,7 +194,7 @@ def stackonhalostile(
 #    posp, vals, weights = precull(posp,vals,weights,posh,rh)
 
     for ih in np.arange(nhalos):    	
-        pospc, valsc, weightsc = cull_and_center(posp,vals,weights,posh[ih],rh[ih],scaled_radius=scaled_radius)
+        pospc, valsc, weightsc = cull_and_center(posp,vals,weights,posh[ih],rpmax,scaled_radius=scaled_radius)
         scale=rh[ih]
         pcenc, pvalc, pnumc = CHP.ComputeHaloProfile(pospc,valsc,weightsc,scale,volweight=volweight,scaled_radius=scaled_radius)
         pcen = np.append(pcen,pcenc)
