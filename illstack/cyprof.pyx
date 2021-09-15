@@ -68,9 +68,10 @@ def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights,
     else:
         r = np.sqrt(xp**2+yp**2+zp**2)
         dm = [r < search_radius * rh]
-    dm=np.array(dm[0])
+
     xp=xp[dm];yp=yp[dm];zp=zp[dm];vals=vals[dm];weights=weights[dm]
     posp=np.column_stack([xp,yp,zp])
+
     return posp,vals,weights
 
 def precull(np.ndarray posp, np.ndarray vals, np.ndarray weights, 
@@ -159,9 +160,9 @@ def stackonhalostile(
         dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mstari>mhmin) & (mstari<mhmax)]
     elif mass_kind =='halo':
         dmh = [(xh>x1h) & (xh<x2h) & (yh>y1h) & (yh<y2h) & (zh>z1h) & (zh<z2h) & (mhi>mhmin) & (mhi<mhmax)]
+
     dmh=np.array(dmh[0])
     dmp=np.array(dmp[0])
-
     xp=xp[dmp]; yp=yp[dmp]; zp=zp[dmp]
     xh=xh[dmh]; yh=yh[dmh]; zh=zh[dmh] 
 
@@ -169,6 +170,7 @@ def stackonhalostile(
     posh  = np.column_stack([xh,yh,zh])
 
     vals          = valsi[dmp]
+
     mh    	  = mhi[dmh]
     rh            = rhi[dmh] 
     GroupFirstSub = GroupFirstSubi[dmh] 
