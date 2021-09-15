@@ -68,7 +68,7 @@ def cull_and_center(np.ndarray posp, np.ndarray vals, np.ndarray weights,
     else:
         r = np.sqrt(xp**2+yp**2+zp**2)
         dm = [r < search_radius * rh]
-
+    dm=np.array(dm[0])
     xp=xp[dm];yp=yp[dm];zp=zp[dm];vals=vals[dm];weights=weights[dm]
     posp=np.column_stack([xp,yp,zp])
 
