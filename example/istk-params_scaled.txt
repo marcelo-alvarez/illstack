@@ -1,4 +1,0 @@
-basepath = '/Users/emilymoser/Repositories/illstack_moser_fork/scripts/illustris_python'
-serial   = True
-lims     = [0.01,10] # scaled radius
-bins     = 25

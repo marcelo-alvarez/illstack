@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 import sys
 import numpy             as np
-import matplotlib.pyplot as plt
 import illstack as istk
 import mpi4py.rc
-from decimal import Decimal
 import params_tng
 
 istk.init.initialize(sys.argv[1])
@@ -39,11 +37,6 @@ omegab=0.0486
 omegadm =omegam-omegab
 #Xh=0.76
 gamma = 5./3.
-
-mcenter=Decimal(mcenter)
-mcenter='{:.2e}'.format(mcenter)
-mcenter_power=np.log10(float(mcenter))
-mcenter_power=str(int(mcenter_power))
 
 if prof=='gasdens':
     print("Completing profiles for gasdens")
@@ -84,16 +77,12 @@ sfr  = halos['GroupSFR'] #Msol/yr
 halo_mass= halos['GroupMassType']
 mstar= halo_mass[:,4] #stellar mass, 1e10 Msol/h
 
-#print "orignal posh", np.shape(posh)
-#print "shape of groupfirstsub", np.shape(GroupFirstSub)
-
 r, val, n, mh, rh, nprofs,GroupFirstSub,sfr,mstar = istk.cyprof.stackonhalos(posp,vals,posh,mh,rh,GroupFirstSub,sfr,mstar,ntile,volweight,mhmin, mhmax,scaled_radius,mass_kind)
 #print "nprofs", nprofs
 r  =np.reshape(r,  (nprofs,istk.params.bins))
 val=np.reshape(val,(nprofs,istk.params.bins)) 
 n  =np.reshape(n,  (nprofs,istk.params.bins))
 
-#print 'shapes: ','r', np.shape(r),'val', np.shape(val),'n', np.shape(n),'mh', np.shape(mh)
-#np.savez(prof+'_scaled_'+sim+'_'+str(sys.argv[4])+'_'+mcenter_power+'.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar)
+np.savez(prof+'_unscaled_'+sim+'_'+str(sys.argv[4])+'_'+mass_kind+'_newghost_'+search+'.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar)
 
-np.savez(prof+'_unscaled_'+sim+'_'+str(sys.argv[4])+'_mstar_total_test100.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar)
+#np.savez(prof+'_unscaled_'+sim+'_'+str(sys.argv[4])+'_marco.npz',r=r[0],val=val,n=n,mh=mh,rh=rh,nprofs=nprofs,nbins=istk.params.bins,GroupFirstSub=GroupFirstSub,sfr=sfr,mstar=mstar) 

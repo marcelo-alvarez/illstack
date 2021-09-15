@@ -5,7 +5,6 @@ import time
 #sim=np.array(['tng','ill'])
 sim=np.array(['tng'])
 
-#mass=np.array([1e12])
 mass=np.array([10**12]) #These matter for mass option 2
 mcenter_power=np.array([12]) 
 
@@ -21,22 +20,24 @@ type3='pres_av'
 type4='dens_av'
 
 red_dict_tng={'059':0.7,'060':0.68, '061':0.64,'062':0.62,'063':0.60,'064':0.58,'065':0.55,
-              '066':0.52,'067':0.50,'068':0.48,'069':0.46,'070':0.44,'071':0.42,'072':0.40,
-              '099':0.0}
+              '066':0.52,'067':0.50,'068':0.48,'069':0.46,'070':0.44,'071':0.42,'072':0.40,'077':0.31,'099':0.0}
+red_dict_ill={'101':0.55,'120':0.2}
+
 start=time.time()
 for k in np.arange(len(sim)):
     if sim[k]=='ill':
-        snap=np.array(['120'])
+        snap=np.array(['101'])
     else:
         #snap=red_dict_tng.keys() #for all snaps
-        snap=np.array(['065'])
+        #snap=np.array(['065'])
+        snap=np.array(['099','077','063'])
     for j in np.arange(len(snap)):
         for i in np.arange(len(mass)):
             f=open('getprof_temp_profiles.sh','w')
             print >>f, '#!/bin/bash'
-            #print >> f, 'python', '../scripts/profiles_mult.py', 'istk-params_'+sim[k]+'.txt', prof1, str(mass[i]), snap[j], sim[k]  
             print >> f, 'python', '../scripts/profiles_mult.py', 'istk-params_'+sim[k]+'.txt', prof2, str(mass[i]), snap[j], sim[k]
             print >> f, 'python', '../scripts/profiles_mult.py', 'istk-params_'+sim[k]+'.txt', prof3, str(mass[i]), snap[j], sim[k]
+            #print >> f, 'python', '../scripts/profiles_mult_ill.py', 'istk-params_'+sim[k]+'.txt', prof3, str(mass[i]), snap[j], sim[k]
             f.close()
             print("*******************************************************************************************")
             print("profile shell generated for sim = %s, mass= %s, snap= %s"%(sim[k],str(mcenter_power[i]),str(snap[j])))
